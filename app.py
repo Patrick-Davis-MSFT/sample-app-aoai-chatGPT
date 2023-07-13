@@ -41,6 +41,15 @@ AZURE_OPENAI_PREVIEW_API_VERSION = os.environ.get("AZURE_OPENAI_PREVIEW_API_VERS
 AZURE_OPENAI_STREAM = os.environ.get("AZURE_OPENAI_STREAM", "true")
 AZURE_OPENAI_MODEL_NAME = os.environ.get("AZURE_OPENAI_MODEL_NAME", "gpt-35-turbo") # Name of the model, e.g. 'gpt-35-turbo' or 'gpt-4'
 
+AZURE_OPENAI_ENDPOINT = f"{AZURE_OPENAI_RESOURCE}.openai.azure.com"
+
+#AZURE APIM Ingretation Settings
+AZURE_APIM_SUBSCRIPTION_KEY = os.environ.get("AZURE_APIM_SUBSCRIPTION_KEY", "")
+AZURE_APIM_OPENAI_URL = os.environ.get("AZURE_APIM_OPENAI_URL", "")
+if AZURE_APIM_OPENAI_URL != "" and AZURE_APIM_SUBSCRIPTION_KEY != "":
+    AZURE_OPENAI_ENDPOINT = f"{AZURE_APIM_OPENAI_URL}"
+
+
 SHOULD_STREAM = True if AZURE_OPENAI_STREAM.lower() == "true" else False
 
 def is_chat_model():
@@ -86,7 +95,7 @@ def prepare_body_headers_with_data(request):
         ]
     }
 
-    chatgpt_url = f"https://{AZURE_OPENAI_RESOURCE}.openai.azure.com/openai/deployments/{AZURE_OPENAI_MODEL}"
+    chatgpt_url = f"https://{AZURE_OPENAI_ENDPOINT}/openai/deployments/{AZURE_OPENAI_MODEL}"
     if is_chat_model():
         chatgpt_url += "/chat/completions?api-version=2023-03-15-preview"
     else:
@@ -146,7 +155,7 @@ def stream_with_data(body, headers, endpoint):
 
 def conversation_with_data(request):
     body, headers = prepare_body_headers_with_data(request)
-    endpoint = f"https://{AZURE_OPENAI_RESOURCE}.openai.azure.com/openai/deployments/{AZURE_OPENAI_MODEL}/extensions/chat/completions?api-version={AZURE_OPENAI_PREVIEW_API_VERSION}"
+    endpoint = f"https://{AZURE_OPENAI_ENDPOINT}/openai/deployments/{AZURE_OPENAI_MODEL}/extensions/chat/completions?api-version={AZURE_OPENAI_PREVIEW_API_VERSION}"
     
     if not SHOULD_STREAM:
         r = requests.post(endpoint, headers=headers, json=body)
@@ -184,7 +193,7 @@ def stream_without_data(response):
 
 def conversation_without_data(request):
     openai.api_type = "azure"
-    openai.api_base = f"https://{AZURE_OPENAI_RESOURCE}.openai.azure.com/"
+    openai.api_base = f"https://{AZURE_OPENAI_ENDPOINT}/"
     openai.api_version = "2023-03-15-preview"
     openai.api_key = AZURE_OPENAI_KEY
 
