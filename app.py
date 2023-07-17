@@ -162,7 +162,10 @@ def stream_with_data(body, headers, endpoint):
 def conversation_with_data(request):
     body, headers = prepare_body_headers_with_data(request)
     endpoint = f"{AZURE_OPENAI_ENDPOINT}/openai/deployments/{AZURE_OPENAI_MODEL}/extensions/chat/completions?api-version={AZURE_OPENAI_PREVIEW_API_VERSION}"
-    
+    console.log("request")
+    console.log(endpoint)
+    console.log(headers)
+    console.log(body)
     if not SHOULD_STREAM:
         r = requests.post(endpoint, headers=headers, json=body)
         status_code = r.status_code
