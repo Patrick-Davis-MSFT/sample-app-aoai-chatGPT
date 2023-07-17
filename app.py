@@ -47,7 +47,7 @@ if not(AZURE_OPENAI_ENDPOINT.startswith("http")):
     AZURE_OPENAI_ENDPOINT = f"https://{AZURE_OPENAI_ENDPOINT}"
 
 if not(AZURE_SEARCH_SERVICE.startswith("http")):
-    AZURE_SEARCH_SERVICE = f"https://{AZURE_SEARCH_SERVICE}.search.windows.net"
+    AZURE_SEARCH_SERVICE = f"https://{AZURE_SEARCH_SERVICE}"
 
 #AZURE APIM Ingretation Settings
 AZURE_APIM_SUBSCRIPTION_KEY = os.environ.get("AZURE_APIM_SUBSCRIPTION_KEY", "")
