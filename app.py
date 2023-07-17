@@ -43,6 +43,12 @@ AZURE_OPENAI_MODEL_NAME = os.environ.get("AZURE_OPENAI_MODEL_NAME", "gpt-35-turb
 
 AZURE_OPENAI_ENDPOINT = f"{AZURE_OPENAI_RESOURCE}"
 
+if not(AZURE_OPENAI_ENDPOINT.startswith("http")):
+    AZURE_OPENAI_ENDPOINT = f"https://{AZURE_OPENAI_ENDPOINT}"
+
+if not(AZURE_SEARCH_SERVICE.startswith("http")):
+    AZURE_SEARCH_SERVICE = f"https://{AZURE_SEARCH_SERVICE}.search.windows.net"
+
 #AZURE APIM Ingretation Settings
 AZURE_APIM_SUBSCRIPTION_KEY = os.environ.get("AZURE_APIM_SUBSCRIPTION_KEY", "")
 AZURE_APIM_OPENAI_URL = os.environ.get("AZURE_APIM_OPENAI_URL", "")
@@ -76,7 +82,7 @@ def prepare_body_headers_with_data(request):
             {
                 "type": "AzureCognitiveSearch",
                 "parameters": {
-                    "endpoint": f"https://{AZURE_SEARCH_SERVICE}.search.windows.net",
+                    "endpoint": f"{AZURE_SEARCH_SERVICE}.search.windows.net",
                     "key": AZURE_SEARCH_KEY,
                     "indexName": AZURE_SEARCH_INDEX,
                     "fieldsMapping": {
@@ -95,7 +101,7 @@ def prepare_body_headers_with_data(request):
         ]
     }
 
-    chatgpt_url = f"https://{AZURE_OPENAI_ENDPOINT}/openai/deployments/{AZURE_OPENAI_MODEL}"
+    chatgpt_url = f"{AZURE_OPENAI_ENDPOINT}/openai/deployments/{AZURE_OPENAI_MODEL}"
     if is_chat_model():
         chatgpt_url += "/chat/completions?api-version=2023-03-15-preview"
     else:
@@ -155,7 +161,7 @@ def stream_with_data(body, headers, endpoint):
 
 def conversation_with_data(request):
     body, headers = prepare_body_headers_with_data(request)
-    endpoint = f"https://{AZURE_OPENAI_ENDPOINT}/openai/deployments/{AZURE_OPENAI_MODEL}/extensions/chat/completions?api-version={AZURE_OPENAI_PREVIEW_API_VERSION}"
+    endpoint = f"{AZURE_OPENAI_ENDPOINT}/openai/deployments/{AZURE_OPENAI_MODEL}/extensions/chat/completions?api-version={AZURE_OPENAI_PREVIEW_API_VERSION}"
     
     if not SHOULD_STREAM:
         r = requests.post(endpoint, headers=headers, json=body)
@@ -193,7 +199,7 @@ def stream_without_data(response):
 
 def conversation_without_data(request):
     openai.api_type = "azure"
-    openai.api_base = f"https://{AZURE_OPENAI_ENDPOINT}/"
+    openai.api_base = f"{AZURE_OPENAI_ENDPOINT}/"
     openai.api_version = "2023-03-15-preview"
     openai.api_key = AZURE_OPENAI_KEY
 
